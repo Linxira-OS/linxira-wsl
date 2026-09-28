@@ -1,0 +1,21 @@
+# Linxira WSL rootfs 包清单
+# 设计: 纯 CLI 一方工具链 + 可通过 WSLg 显示的 GUI 工具(linxira-update 等)。
+# 与 target-packages-minimal.x86_64(linxira-iso-direct)的关系: 同为"无桌面
+# 精简系统", 但 WSL 变体额外包含 Linxira 工具链, 并剔除 WSL 无意义的
+# 内核/固件/引导(WSL 自带内核)。
+# 刻意不装 NetworkManager: WSL 网络由 Windows 侧管理, 装了也不接管任何接口。
+base
+curl
+openssh
+sudo
+btrfs-progs
+archlinux-keyring
+linxira-keyring
+linxira-catalog
+linxira-components
+linxira-config-hub
+linxira-recovery-diagnostics
+linxira-update
+linxira-wiki
+linxira-component-manager
+linxira-completion-agent
