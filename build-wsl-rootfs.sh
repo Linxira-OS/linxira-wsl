@@ -63,11 +63,17 @@ sudo ln -sf ../usr/lib/os-release "$work/root/etc/os-release"
 
 sudo install -Dm644 wsl.conf "$work/root/etc/wsl.conf"
 
-# 目标系统仓库配置 = ISO 装机同款(linxirapacstrap._enable_target_linxira_repo):
-# pacstrap 会把构建期 pacman.conf 拷入 root, 这里把 [linxira] 段从构建期的
-# Never 换回正式验签配置。
-sudo sed -i '/^\[linxira\]/,/^$/{s/^SigLevel = Never$/SigLevel = Required DatabaseOptional/;}' \
-  "$work/root/etc/pacman.conf"
+# 目标系统仓库配置 = ISO 装机同款(linxirapacstrap._enable_target_linxira_repo)。
+# 实测(2026-09-28): pacstrap 不会把 -C 指定的构建配置拷入目标 /etc/pacman.conf
+# (目标保留 stock 配置), 因此 [linxira] 段必须显式追加(幂等)。
+if ! sudo grep -q '^\[linxira\]' "$work/root/etc/pacman.conf"; then
+  {
+    echo ""
+    echo "[linxira]"
+    echo "SigLevel = Required DatabaseOptional"
+    echo "Server = ${repo_url}/\$arch"
+  } | sudo tee -a "$work/root/etc/pacman.conf" >/dev/null
+fi
 
 # 服务: 仅启用 components 系统事务服务; guard 定时器刻意不默认启用
 # (WSL VM 闲置即关停, 定时器只在运行期触发, 语义弱化——见 README)
