@@ -1,5 +1,65 @@
 # linxira-wsl
 
+Linxira OS as a WSL2 distribution: a CLI-first toolchain plus WSLg-capable
+GUI tools, for `wsl --import` / `wsl --install --from-file` on Windows.
+
+## What is this
+
+A pacstrap-produced rootfs (tar.gz) with no kernel/firmware/bootloader
+(WSL ships its own kernel) — only what you actually use in a terminal:
+
+- `linxira-components` / `linxira-component-manager` — component installer
+  (CLI, TUI and GUI share one transaction chain)
+- `linxira-config` (Config Hub CLI) — mirrors, network, hardening,
+  workspace guard, environment variables, software stacks
+- `linxira-recovery-diagnostics` — evidence & repair planning (CLI + GUI)
+- `linxira-update`, `linxira-wiki`, `linxira-catalog`,
+  `linxira-completion-agent`
+
+Full manifest: `wsl-packages.x86_64` (~318 packages, 1.7 GB installed,
+~0.5 GB compressed).
+
+## Usage
+
+```powershell
+wsl --import linxira C:\path\for\vhdx linxira-wsl-<version>-x86_64.tar.gz --version 2
+wsl -d linxira
+
+wsl --unregister linxira   # remove
+```
+
+Default user is `root`, systemd is enabled (see `wsl.conf`).
+
+## Relation to the desktop ISO
+
+| | ISO install | WSL |
+|---|---|---|
+| Kernel / boot / partitioning | handled by installer | not applicable (WSL kernel) |
+| Desktop | catalog choice (plasma/cosmic/server/minimal) | no session; GUI tools via WSLg (Win11) |
+| Software stacks | installer / component-manager | `linxira-config stack` or component-manager (same chain) |
+| Workspace guard | 30-min timer | off by default (WSL VMs stop when idle); opt-in |
+
+## Build
+
+On Arch (or in a container):
+
+```bash
+sudo pacman -S --needed arch-install-scripts
+./build-wsl-rootfs.sh            # artifacts in out/
+LINXIRA_MIRROR=https://mirrors.aliyun.com/archlinux ./build-wsl-rootfs.sh
+```
+
+The build deliberately avoids `/tmp` (tmpfs is RAM; a full tmpfs OOM-kills
+other builds on the same machine — real incident).
+
+## Releases
+
+GitHub Releases carry `linxira-wsl-<YYYY.MM.DD>-x86_64.tar.gz` plus
+`.sha256`. Chinese documentation follows.
+---
+
+## 简体中文
+
 Linxira OS 的 WSL2 发行版镜像：纯 CLI 工具链 + 可经 WSLg 显示的图形工具，
 供 Windows 侧 `wsl --import` / `wsl --install --from-file` 使用。
 
