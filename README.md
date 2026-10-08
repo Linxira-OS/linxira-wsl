@@ -16,8 +16,8 @@ A pacstrap-produced rootfs (tar.gz) with no kernel/firmware/bootloader
 - `linxira-update`, `linxira-wiki`, `linxira-catalog`,
   `linxira-completion-agent`
 
-Full manifest: `wsl-packages.x86_64` (~318 packages, 1.7 GB installed,
-~0.5 GB compressed).
+Full manifest: `wsl-packages.x86_64` — 15 explicit entries, ~318 packages after
+dependency resolution (~1.7 GB installed, ~0.5 GB compressed).
 
 ## Usage
 
@@ -73,7 +73,8 @@ Linxira OS 的 WSL2 发行版镜像：纯 CLI 工具链 + 可经 WSLg 显示的�
 - `linxira-recovery-diagnostics` —— 恢复诊断（CLI + GUI）
 - `linxira-update`、`linxira-wiki`、`linxira-catalog`、`linxira-completion-agent`
 
-完整清单见 `wsl-packages.x86_64`（约 318 个包，装好 1.6G，压缩后约 0.5G）。
+完整清单见 `wsl-packages.x86_64` —— 15 个显式条目，解析依赖后约 318 个包（装好约
+1.7 GB，压缩后约 0.5 GB）。
 
 ## 使用
 
