@@ -14,10 +14,11 @@ A pacstrap-produced rootfs (tar.gz) with no kernel/firmware/bootloader
   workspace guard, environment variables, software stacks
 - `linxira-recovery-diagnostics` — evidence & repair planning (CLI + GUI)
 - `linxira-update`, `linxira-wiki`, `linxira-catalog`,
-  `linxira-completion-agent`
+  `linxira-completion-agent`, `linxira-crash-watch`
 
-Full manifest: `wsl-packages.x86_64` — 15 explicit entries, ~318 packages after
-dependency resolution (~1.7 GB installed, ~0.5 GB compressed).
+Full manifest: `wsl-packages.x86_64` — 16 explicit entries, ~318 packages after
+dependency resolution (~1.7 GB installed, ~0.5 GB compressed; that measurement
+predates adding `linxira-crash-watch`).
 
 ## Usage
 
@@ -71,10 +72,10 @@ Linxira OS 的 WSL2 发行版镜像：纯 CLI 工具链 + 可经 WSLg 显示的�
 - `linxira-components` / `linxira-component-manager` —— 组件安装（系统事务引擎）
 - `linxira-config`（Config Hub CLI）—— 镜像源、网络、加固、工作区守护等系统配置
 - `linxira-recovery-diagnostics` —— 恢复诊断（CLI + GUI）
-- `linxira-update`、`linxira-wiki`、`linxira-catalog`、`linxira-completion-agent`
+- `linxira-update`、`linxira-wiki`、`linxira-catalog`、`linxira-completion-agent`、`linxira-crash-watch`
 
-完整清单见 `wsl-packages.x86_64` —— 15 个显式条目，解析依赖后约 318 个包（装好约
-1.7 GB，压缩后约 0.5 GB）。
+完整清单见 `wsl-packages.x86_64` —— 16 个显式条目，解析依赖后约 318 个包（装好约
+1.7 GB，压缩后约 0.5 GB；该实测在并入 `linxira-crash-watch` 之前）。
 
 ## 使用
 

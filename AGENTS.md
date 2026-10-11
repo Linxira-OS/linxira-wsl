@@ -13,7 +13,7 @@
 ## 目录布局
 
 - `build-wsl-rootfs.sh` —— 构建器(Arch/容器内跑 `pacstrap` + finalize + 打包 `tar.gz` + `.sha256`);产物在 `out/`。
-- `wsl-packages.x86_64` —— 包清单,**15 个显式条目,解析依赖后约 318 个包**(约 1.7 GB 安装 / 约 0.5 GB 压缩)。
+- `wsl-packages.x86_64` —— 包清单,**16 个显式条目,解析依赖后约 318 个包**(约 1.7 GB 安装 / 约 0.5 GB 压缩;该实测早于 `linxira-crash-watch` 并入)。
 - `wsl.conf` —— 构建时装入镜像 `/etc/wsl.conf`(`systemd=true`、`default=root`、`hostname=linxira`)。
 - `.gitignore` —— 忽略 `out/`、`.build-wsl/`(构建产物,勿入仓)。
 
