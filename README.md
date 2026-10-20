@@ -74,8 +74,26 @@ Linxira OS 的 WSL2 发行版镜像：纯 CLI 工具链 + 可经 WSLg 显示的�
 - `linxira-recovery-diagnostics` —— 恢复诊断（CLI + GUI）
 - `linxira-update`、`linxira-wiki`、`linxira-catalog`、`linxira-completion-agent`、`linxira-crash-watch`
 
-完整清单见 `wsl-packages.x86_64` —— 16 个显式条目，解析依赖后约 318 个包（装好约
-1.7 GB，压缩后约 0.5 GB；该实测在并入 `linxira-crash-watch` 之前）。
+完整清单见 `wsl-packages.x86_64` —— 30 个显式条目,解析依赖后三百余个包
+(安装体积/压缩体积以构建输出为准,脚本结尾会打印 `du -sh`)。证书栈是**硬要求**:
+`ca-certificates` 显式声明,构建脚本会断言根证书库存在且证书数量正常(缺失即构建失败)。
+
+## 网络（中国网络环境）
+
+镜像**不内置**任何 DNS/代理/hosts 覆盖 —— `/etc/hosts` 与 `/etc/resolv.conf` 由 WSL 自动生成,
+网络解析完全交给 Windows 侧。国内网络下"某些网站打不开"通常是宿主侧原因,与本镜像无关。
+最常见的一种是 **Steam++ / Watt Toolkit 之类加速器**:它把域名写进 Windows `hosts` 指向
+`127.0.0.1`(行尾带 `#S302` 标记),WSL2 经 Windows 解析器拿到这些地址,而 **WSL 里的
+`127.0.0.1` 是 WSL 自己的虚拟机**,于是连接被拒(`Connection refused`)。这**不是证书问题**:
+本镜像根证书库与 Arch 一致(三件套 + 约 120 张根证书)。
+
+要让加速器/代理在 WSL 内生效,二选一:
+
+- **镜像网络模式**(推荐,Win11 22H2+):在 `%UserProfile%\.wslconfig` 加
+  `[wsl2]` / `networkingMode=mirrored`,然后 `wsl --shutdown` —— 此后 WSL 的 `127.0.0.1`
+  就是 Windows 的 `127.0.0.1`;
+- **显式代理**:WSL 内 `export HTTPS_PROXY=http://<Windows 宿主 IP>:<端口>`(NAT 模式的宿主
+  IP 见 `/etc/resolv.conf` 的 nameserver),或写进 shell 启动文件。
 
 ## 使用
 

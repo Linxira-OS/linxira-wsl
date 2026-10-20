@@ -6,6 +6,23 @@
 # 刻意不装 NetworkManager: WSL 网络由 Windows 侧管理, 装了也不接管任何接口。
 base
 curl
+# --- 常用 CLI 基线(2026-10-20)--- WSL 不做"绝对精简"镜像:
+# ca-certificates 显式声明(勿依赖 curl 的传递依赖 —— 已在构建脚本加根证书断言);
+# 其余为日常工具, 避免用户一进来就得自己补 git/wget/编辑器/手册页/解压。
+ca-certificates
+git
+wget
+nano
+less
+man-db
+man-pages
+bash-completion
+unzip
+zip
+which
+rsync
+dnsutils
+jq
 openssh
 sudo
 btrfs-progs

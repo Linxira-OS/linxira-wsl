@@ -79,6 +79,21 @@ fi
 # (WSL VM 闲置即关停, 定时器只在运行期触发, 语义弱化——见 README)
 sudo systemctl --root "$work/root" enable linxira-components.service
 
+# ---- 证书断言(2026-10-20)----
+# 背景: WSL 侧曾报「部分网站缺证书」, 实测为 Windows 侧 Steam++(hosts 里 #S302 条目)
+# 把域名钉到 127.0.0.1, 再经 DNS 传导进 WSL —— 而 WSL 的 127.0.0.1 是它自己的虚拟机,
+# 于是连接被拒。与镜像无关(实测镜像内 121 张根证书齐全)。但这里仍把「静默失证」变成
+# 构建硬失败: update-ca-trust 必须跑过, bundle 必须存在且证书数量正常(正常 Arch ≈120+)。
+sudo arch-chroot "$work/root" /usr/sbin/update-ca-trust 2>/dev/null || true
+ca_bundle="$work/root/etc/ssl/certs/ca-certificates.crt"
+[[ -e "$ca_bundle" ]] || { echo "错误: 缺少 $ca_bundle" >&2; exit 1; }
+ca_count=$(grep -c 'BEGIN CERTIFICATE' "$work/root/etc/ca-certificates/extracted/tls-ca-bundle.pem" 2>/dev/null || true)
+[[ "${ca_count:-0}" -ge 100 ]] || { echo "错误: 根证书数量异常(${ca_count:-0} < 100)" >&2; exit 1; }
+sudo pacman --root "$work/root" --dbpath "$work/root/var/lib/pacman" -Q \
+  ca-certificates ca-certificates-mozilla ca-certificates-utils >/dev/null \
+  || { echo "错误: 证书三件套未安装" >&2; exit 1; }
+printf '==> 证书检查通过: %s 张根证书\n' "$ca_count"
+
 # ---- 打包 ----
 image="linxira-wsl-${version}-x86_64.tar.gz"
 printf '==> 打包 %s...\n' "$outdir/$image"
