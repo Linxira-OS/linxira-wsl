@@ -100,6 +100,17 @@ sudo pacman --root "$work/root" --dbpath "$work/root/var/lib/pacman" -Q \
   || { echo "错误: 证书三件套未安装" >&2; exit 1; }
 printf '==> 证书检查通过: %s 张根证书\n' "$ca_count"
 
+# ---- 发布证据: 第三方声明 + 源码提供(2026-10-24)----
+# GPL/AGPL 二进制随镜像分发 ⇒ 必须带 THIRD-PARTY-NOTICES / SOURCE-OFFER /
+# machine-readable license-manifest。生成器在 packages 仓(同一工作区), 缺失即构建失败。
+notices_script="$(cd .. && pwd)/packages/scripts/generate-notices.py"
+[[ -r "$notices_script" ]] || { echo "错误: 缺少 $notices_script" >&2; exit 1; }
+sudo python3 "$notices_script" --root "$work/root" --version "$version"
+for evidence in THIRD-PARTY-NOTICES.md SOURCE-OFFER license-manifest.json; do
+  sudo test -s "$work/root/usr/share/doc/linxira/$evidence" \
+    || { echo "错误: 缺少发布证据 $evidence" >&2; exit 1; }
+done
+
 # ---- 打包 ----
 image="linxira-wsl-${version}-x86_64.tar.gz"
 printf '==> 打包 %s...\n' "$outdir/$image"
