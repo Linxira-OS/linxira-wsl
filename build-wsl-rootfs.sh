@@ -69,8 +69,30 @@ Server = $repo_url/\$arch
 EOF
 
 mapfile -t packages < <(grep -vE '^[[:space:]]*(#|$)' wsl-packages.x86_64)
+
+# 明确不进系统(2026-10-25 决定): linxira-bio-sdk* 与 linxira-zeta*(含 zeta 五件套)。
+# 它们可能存在于 [linxira] 仓库, 但镜像不得安装 —— 清单写了就构建失败。
+forbidden='^linxira-(bio-sdk|zeta)(-|$)'
+bad=()
+for pkg in "${packages[@]}"; do
+  [[ $pkg =~ $forbidden ]] && bad+=("$pkg")
+done
+if ((${#bad[@]})); then
+  printf '错误: 包清单含禁止安装的包: %s\n' "${bad[*]}" >&2
+  exit 66
+fi
+
 printf '==> pacstrap %s 个包...\n' "${#packages[@]}"
 sudo pacstrap -C "$work/pacman.conf" "$work/root" "${packages[@]}"
+
+# 依赖解析后也可能把它们带进来(例如某个包把 zeta 写成硬依赖), 装完必须复查。
+if sudo pacman --root "$work/root" --dbpath "$work/root/var/lib/pacman" -Q 2>/dev/null \
+     | grep -qE '^linxira-(bio-sdk|zeta)(-| )'; then
+  sudo pacman --root "$work/root" --dbpath "$work/root/var/lib/pacman" -Q 2>/dev/null \
+    | grep -E '^linxira-(bio-sdk|zeta)(-| )' >&2
+  echo "错误: 镜像里出现了 bio-sdk / zeta 包(禁止项)" >&2
+  exit 66
+fi
 
 # ---- finalize: 镜像内目标系统配置 ----
 sudo rm -rf "$work/root/var/cache/pacman/pkg/"*

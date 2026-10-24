@@ -69,6 +69,11 @@ while read -r pkg; do
   printf '  %-30s %s\n' "$pkg" "$(pacman --root "$work" --dbpath "$work/var/lib/pacman" -Q "$pkg" 2>/dev/null || echo MISSING)"
 done < "$packages_file"
 
+echo "== 禁止安装项(bio-sdk / zeta)"
+forbidden_hits=$(pacman --root "$work" --dbpath "$work/var/lib/pacman" -Q 2>/dev/null \
+  | grep -E '^(linxira-(bio-sdk|zeta))' || true)
+if [[ -n "$forbidden_hits" ]]; then echo "  MISS 出现禁止项: $forbidden_hits"; fail=1; else echo "  ok   无 bio-sdk / zeta"; fi
+
 echo "== 许可目录"
 missing=$(python3 - "$work" <<'PY'
 import json, pathlib, sys

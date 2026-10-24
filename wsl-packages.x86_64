@@ -39,3 +39,8 @@ linxira-wiki
 linxira-component-manager
 linxira-completion-agent
 linxira-crash-watch
+linxira-hooks
+linxira-gaming-manager
+linxira-hardware-driver-manager
+linxira-package-center
+linxira-welcome
