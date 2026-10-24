@@ -23,11 +23,13 @@ which
 rsync
 dnsutils
 jq
+fastfetch
 openssh
 sudo
 btrfs-progs
 archlinux-keyring
 linxira-keyring
+linxira-artwork
 linxira-catalog
 linxira-components
 linxira-config-hub

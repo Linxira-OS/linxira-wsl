@@ -13,7 +13,7 @@
 ## 目录布局
 
 - `build-wsl-rootfs.sh` —— 构建器(Arch/容器内跑 `pacstrap` + finalize + 打包 `tar.gz` + `.sha256`);产物在 `out/`。
-- `wsl-packages.x86_64` —— 包清单,**30 个显式条目**(解析依赖后三百余个包;体积以构建输出为准)。
+- `wsl-packages.x86_64` —— 包清单,**32 个显式条目**(解析依赖后三百余个包;体积以构建输出为准)。
   2026-10-20 起:`ca-certificates` 改为**显式声明**(此前靠 `curl` 传递依赖),并补了常用 CLI 基线
   (git/wget/nano/less/man-db/man-pages/bash-completion/unzip/zip/which/rsync/dnsutils/jq)——
   本仓刻意**不做"绝对精简"镜像**。

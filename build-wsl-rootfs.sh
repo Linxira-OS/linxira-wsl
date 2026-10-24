@@ -79,6 +79,12 @@ fi
 # (WSL VM 闲置即关停, 定时器只在运行期触发, 语义弱化——见 README)
 sudo systemctl --root "$work/root" enable linxira-components.service
 
+# ---- 品牌与终端标识(2026-10-24)----
+# logo 由 linxira-artwork 提供: /usr/share/linxira/linxira-logo-braille60.ansi
+# (原点框 Origin Frame, 真彩盲文 30x15 = 60x60 点; 生成器 linxira-artwork/tools/gen-brand-assets.py)。
+# 只放配置不自动打印: 用户敲 fastfetch 才出现, 不污染管道/脚本输出。
+sudo install -Dm644 fastfetch-linxira.jsonc "$work/root/etc/fastfetch/config.d/linxira.jsonc"
+
 # ---- 证书断言(2026-10-20)----
 # 背景: WSL 侧曾报「部分网站缺证书」, 实测为 Windows 侧 Steam++(hosts 里 #S302 条目)
 # 把域名钉到 127.0.0.1, 再经 DNS 传导进 WSL —— 而 WSL 的 127.0.0.1 是它自己的虚拟机,

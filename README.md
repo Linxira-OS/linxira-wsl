@@ -74,7 +74,7 @@ Linxira OS 的 WSL2 发行版镜像：纯 CLI 工具链 + 可经 WSLg 显示的�
 - `linxira-recovery-diagnostics` —— 恢复诊断（CLI + GUI）
 - `linxira-update`、`linxira-wiki`、`linxira-catalog`、`linxira-completion-agent`、`linxira-crash-watch`
 
-完整清单见 `wsl-packages.x86_64` —— 30 个显式条目,解析依赖后三百余个包
+完整清单见 `wsl-packages.x86_64` —— 32 个显式条目,解析依赖后三百余个包
 (安装体积/压缩体积以构建输出为准,脚本结尾会打印 `du -sh`)。证书栈是**硬要求**:
 `ca-certificates` 显式声明,构建脚本会断言根证书库存在且证书数量正常(缺失即构建失败)。
 
