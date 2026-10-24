@@ -80,6 +80,10 @@ sudo ln -sf ../usr/lib/os-release "$work/root/etc/os-release"
 
 sudo install -Dm644 wsl.conf "$work/root/etc/wsl.conf"
 
+# 镜像版本标识: 与 ISO 的 /etc/linxira-release 对齐。许可生成器与排查都靠它
+# (generate-notices.py 在未显式给 --version 时读这份文件)。
+printf '%s\n' "$version" | sudo tee "$work/root/etc/linxira-release" >/dev/null
+
 # 目标系统仓库配置 = ISO 装机同款(linxirapacstrap._enable_target_linxira_repo)。
 # 实测(2026-09-28): pacstrap 不会把 -C 指定的构建配置拷入目标 /etc/pacman.conf
 # (目标保留 stock 配置), 因此 [linxira] 段必须显式追加(幂等)。

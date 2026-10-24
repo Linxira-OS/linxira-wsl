@@ -33,6 +33,12 @@ check usr/share/doc/linxira/THIRD-PARTY-NOTICES.md
 check usr/share/doc/linxira/SOURCE-OFFER
 check usr/share/doc/linxira/license-manifest.json
 
+echo "== 镜像版本标识"
+check etc/linxira-release
+if [[ -s "$work/etc/linxira-release" ]]; then
+  printf '  info %s\n' "$(cat "$work/etc/linxira-release")"
+fi
+
 echo "== 品牌资产 + 图标族"
 check usr/share/linxira/linxira-icon.svg
 check usr/share/linxira/linxira-logo-braille60.ansi
