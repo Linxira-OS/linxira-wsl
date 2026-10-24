@@ -149,6 +149,18 @@ LINXIRA_REPO_URL=file://$HOME/linxira-build/linxira-packages OUTDIR=$HOME/linxir
 脚本会探测当前文件系统（`findmnt`），命中 9p/drvfs 直接拒绝（退出码 65）；
 排障时可设 `LINXIRA_ALLOW_DRVFS=1` 强制跳过。产物 `out/` 再拷回 Windows 盘即可。
 
+## 校验（发布门）
+
+```bash
+./verify-wsl-rootfs.sh out/linxira-wsl-<YYYY.MM.DD>-x86_64.tar.gz
+```
+
+只读断言：许可三件套、品牌资产与图标族、fastfetch 终端标识、catalog 的
+`component-fish/nushell/zsh` 条目、crash-watch 服务 + `90-` preset + `diagnose-crash`
+技能、清单内 Linxira 包版本、**每个 Linxira 包都有 `/usr/share/licenses/<pkg>/`**、
+与 `linxira-artwork` 的品牌资产逐字节一致（忽略 CRLF）、根证书 ≥100 张。
+任一失败退出非零，可直接接发布脚本。`LINXIRA_ARTWORK_DIR` 可指定艺术仓位置。
+
 ## 版本
 
 以 GitHub Release 为准，命名 `linxira-wsl-<YYYY.MM.DD>-x86_64.tar.gz`，
