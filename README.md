@@ -129,6 +129,26 @@ LINXIRA_MIRROR=https://mirrors.aliyun.com/archlinux ./build-wsl-rootfs.sh
 
 构建脚本避开 `/tmp`（tmpfs 即内存，实际事故：写满后同机构建进程被 OOM 杀）。
 
+**构建位置（硬要求）**：必须在 WSL 发行版内部的 ext4 上跑，不能直接对着
+`/mnt/c`、`/mnt/f` 这类 9p 转换路径构建——那里建不出字符/块设备节点
+（`cp: cannot create special file ... Operation not supported`），且整条
+pacstrap/chroot/tar 链路慢一个数量级。先把仓库和 `[linxira]` 仓库拷进 `~`：
+
+```bash
+mkdir -p ~/linxira-build/linxira-wsl
+tar -C /mnt/f/Linxira-OS/linxira-wsl --exclude=.git --exclude=.build-wsl --exclude=out \
+    -cf - . | tar -C ~/linxira-build -xf - --one-top-level=linxira-wsl
+cp -a /mnt/f/Linxira-OS/linxira-packages ~/linxira-build/
+mkdir -p ~/linxira-build/packages/scripts
+cp /mnt/f/Linxira-OS/packages/scripts/generate-notices.py ~/linxira-build/packages/scripts/
+cd ~/linxira-build/linxira-wsl
+LINXIRA_REPO_URL=file://$HOME/linxira-build/linxira-packages OUTDIR=$HOME/linxira-build/out \
+  ./build-wsl-rootfs.sh 2026.10.25
+```
+
+脚本会探测当前文件系统（`findmnt`），命中 9p/drvfs 直接拒绝（退出码 65）；
+排障时可设 `LINXIRA_ALLOW_DRVFS=1` 强制跳过。产物 `out/` 再拷回 Windows 盘即可。
+
 ## 版本
 
 以 GitHub Release 为准，命名 `linxira-wsl-<YYYY.MM.DD>-x86_64.tar.gz`，

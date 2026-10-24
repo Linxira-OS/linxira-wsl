@@ -12,6 +12,23 @@
 # OOM 杀掉。本脚本的工作目录固定在当前目录下, 不用 mktemp -d /tmp。
 set -euo pipefail
 
+# 教训(2026-10-25 实际事故): 在 Windows 盘(/mnt/c|/mnt/f, 9p/drvfs)上构建会
+# 1) 创建不了字符/块设备节点(gnupg 的 socket 直接报 "Operation not supported"),
+# 2) 整条链路经 9p 转换层, pacstrap/chroot/tar 都慢一个数量级。
+# 构建必须在 WSL 发行版内部 ext4 上: 先把仓库和源码拷进 ~ 再跑本脚本。
+fs_type=$(findmnt -n -o FSTYPE --target "$PWD" 2>/dev/null || echo unknown)
+case "$fs_type" in
+  9p|drvfs|v9fs)
+    echo "错误: 当前目录在 Windows 盘上($fs_type)，构建必须放在 WSL 内部 ext4。" >&2
+    echo "      例: mkdir -p ~/build && tar -C \"$PWD\" -cf - . | tar -C ~/build -xf - --one-top-level=linxira-wsl" >&2
+    if [[ ${LINXIRA_ALLOW_DRVFS:-0} == 1 ]]; then
+      echo "警告: LINXIRA_ALLOW_DRVFS=1 覆盖了守卫，继续（仅供排障）。" >&2
+    else
+      exit 65
+    fi
+    ;;
+esac
+
 repo_url=${LINXIRA_REPO_URL:-https://linxira-os.github.io/linxira-packages}
 mirror_url=${LINXIRA_MIRROR:-https://mirrors.ustc.edu.cn/archlinux}
 version=${1:-$(date +%Y.%m.%d)}

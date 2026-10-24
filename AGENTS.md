@@ -34,6 +34,11 @@
 ## 禁区
 
 - 构建**必须避开 `/tmp`**(tmpfs 即内存;实际事故:写满后同机构建进程被 OOM 杀)—— 勿改回 `mktemp -d /tmp`。
+- 构建**必须在 WSL 发行版内部 ext4 上跑**,不能对着 `/mnt/c`、`/mnt/f`(9p/drvfs)构建:
+  那里建不出字符/块设备节点(`cp: cannot create special file ... Operation not supported`),
+  且 pacstrap/chroot/tar 全线慢一个数量级。`build-wsl-rootfs.sh` 已内置 `findmnt` 守卫
+  (命中 9p/drvfs 退出 65);排障才用 `LINXIRA_ALLOW_DRVFS=1`。先把仓库与 `[linxira]`
+  仓库拷进 `~` 再构建,产物再拷回 Windows 盘。
 - 不要给 WSL 变体加内核 / 固件 / 引导;不要装 `NetworkManager`(WSL 网络由 Windows 侧管理)。
 - 构建期 `[linxira]` 仓库用 `SigLevel = Never` **仅为引导链**(密钥在被安装的包里,存在鸡生蛋问题);
   装入镜像的最终 `/etc/pacman.conf` 使用与 ISO 装机完全相同的验签配置 —— 勿改动这一威胁模型。
