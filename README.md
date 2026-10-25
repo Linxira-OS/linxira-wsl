@@ -40,6 +40,20 @@ Default user is `root`, systemd is enabled (see `wsl.conf`).
 | Software stacks | installer / component-manager | `linxira-config stack` or component-manager (same chain) |
 | Workspace guard | 30-min timer | off by default (WSL VMs stop when idle); opt-in |
 
+### Zeta (optional, npm only)
+
+The image deliberately does **not** ship Zeta. For terminal work the upstream
+npm distribution is the right fit (and the only one that fits a headless WSL):
+
+```bash
+sudo pacman -S nodejs npm          # image ships no Node runtime
+npm i -g @linxiraos/zeta           # zetacode — coding agent CLI
+npm i -g @linxiraos/main           # zetawork — workbench (optional)
+```
+
+The full binary package (`linxira-zeta`, ~209 MiB) is the desktop path, not the
+WSL one: it pulls X11/Wayland/Vulkan and is meant for an installed system.
+
 ## Build
 
 On Arch (or in a container):
@@ -116,6 +130,19 @@ wsl --unregister linxira
 | 桌面 | catalog 选择（plasma/cosmic/server/最小） | 无会话；GUI 工具走 WSLg（Win11） |
 | 软件栈 | 装机时选择 / component-manager | `linxira-component-manager`（同一条链） |
 | 工作区守护 | 定时器每 30 分钟 | 不默认启用（WSL VM 闲置即关停，定时器只在运行期触发）；可手动 `linxira-config workspace-guard enable` |
+
+## Zeta（可选，仅推荐 npm 版）
+
+镜像**有意不装** Zeta。终端场景用上游 npm 分发最合适，也是无图形环境里唯一合理的装法：
+
+```bash
+sudo pacman -S nodejs npm          # 镜像不自带 Node
+npm i -g @linxiraos/zeta           # zetacode —— 编码 agent 命令行
+npm i -g @linxiraos/main           # zetawork —— 工作台（可选）
+```
+
+完整二进制包（`linxira-zeta`，约 209 MiB）是**桌面系统**的路线，不是 WSL 的：
+它依赖 X11/Wayland/Vulkan，面向已安装的桌面环境。
 
 ## 构建
 
