@@ -127,6 +127,11 @@ fi
 sudo arch-chroot "$work/root" /usr/share/libalpm/scripts/linxira-branding
 sudo grep -q '^PRETTY_NAME="Linxira OS"' "$work/root/etc/os-release" || {
   echo "错误: os-release 品牌化失败" >&2; exit 1; }
+# WSL NAT 没有可用 IPv6 路由, 但 glibc 默认优先 AAAA: pacman(libcurl) 会先连
+# IPv6 并在 10s 后超时, 而 curl 会自动回落 IPv4。强制 IPv4 优先, 否则
+# pacman -Sy 对 github.io 时好时坏(表现为超时或 db 截断 -> 签名无效)。
+sudo install -d -m755 "$work/root/etc"
+printf 'precedence ::ffff:0:0/96  100\n' | sudo tee -a "$work/root/etc/gai.conf" >/dev/null
 sudo systemctl --root "$work/root" enable linxira-components.service
 
 # ---- 品牌与终端标识(2026-10-24)----
