@@ -30,6 +30,8 @@ case "$fs_type" in
 esac
 
 repo_url=${LINXIRA_REPO_URL:-https://linxira-os.github.io/linxira-packages}
+# 装进镜像的 [linxira] 必须指向公网 Pages, 不能沿用构建期的 file:// 仓库
+final_repo_url=${LINXIRA_FINAL_REPO_URL:-https://linxira-os.github.io/linxira-packages}
 mirror_url=${LINXIRA_MIRROR:-https://mirrors.ustc.edu.cn/archlinux}
 version=${1:-$(date +%Y.%m.%d)}
 outdir=${OUTDIR:-out}
@@ -114,12 +116,17 @@ if ! sudo grep -q '^\[linxira\]' "$work/root/etc/pacman.conf"; then
     echo ""
     echo "[linxira]"
     echo "SigLevel = Required DatabaseOptional"
-    echo "Server = ${repo_url}/\$arch"
+    echo "Server = ${final_repo_url}/\$arch"
   } | sudo tee -a "$work/root/etc/pacman.conf" >/dev/null
 fi
 
 # 服务: 仅启用 components 系统事务服务; guard 定时器刻意不默认启用
 # (WSL VM 闲置即关停, 定时器只在运行期触发, 语义弱化——见 README)
+# pacstrap 同一事务里安装的 pacman hook 不会在本次事务触发(linxira-hooks 与
+# filesystem 同批安装), 必须显式跑一次品牌脚本, 否则 PRETTY_NAME 仍是 Arch Linux。
+sudo arch-chroot "$work/root" /usr/share/libalpm/scripts/linxira-branding
+sudo grep -q '^PRETTY_NAME="Linxira OS"' "$work/root/etc/os-release" || {
+  echo "错误: os-release 品牌化失败" >&2; exit 1; }
 sudo systemctl --root "$work/root" enable linxira-components.service
 
 # ---- 品牌与终端标识(2026-10-24)----
