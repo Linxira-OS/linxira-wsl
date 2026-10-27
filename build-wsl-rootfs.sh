@@ -125,7 +125,14 @@ fi
 # pacstrap 同一事务里安装的 pacman hook 不会在本次事务触发(linxira-hooks 与
 # filesystem 同批安装), 必须显式跑一次品牌脚本, 否则 PRETTY_NAME 仍是 Arch Linux。
 sudo arch-chroot "$work/root" /usr/share/libalpm/scripts/linxira-branding
-sudo grep -q '^PRETTY_NAME="Linxira OS"' "$work/root/etc/os-release" || {
+# 品牌脚本里的 sed -i 会把 /etc/os-release 链接替换成普通文件; 回写真实文件
+# 并恢复链接, 否则 /usr/lib/os-release 仍是 Arch(与安装器同一故障)。
+if [ -f "$work/root/etc/os-release" ] && [ ! -L "$work/root/etc/os-release" ]; then
+  sudo cp -f "$work/root/etc/os-release" "$work/root/usr/lib/os-release"
+  sudo rm -f "$work/root/etc/os-release"
+  sudo ln -s ../usr/lib/os-release "$work/root/etc/os-release"
+fi
+sudo grep -q '^PRETTY_NAME="Linxira OS"' "$work/root/usr/lib/os-release" || {
   echo "错误: os-release 品牌化失败" >&2; exit 1; }
 # WSL NAT 没有可用 IPv6 路由, 但 glibc 默认优先 AAAA: pacman(libcurl) 会先连
 # IPv6 并在 10s 后超时, 而 curl 会自动回落 IPv4。强制 IPv4 优先, 否则
